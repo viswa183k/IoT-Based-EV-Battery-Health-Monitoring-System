@@ -1,56 +1,26 @@
-#include <ESP8266WiFi.h>
-#include <LiquidCrystal.h>
-#include <DHT.h>
+# IoT-Based EV Battery Health Monitoring System  
 
-#define DHTPIN A0
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
+### 📌 Overview  
+This project monitors **EV battery health** in real-time and sends voltage, temperature, and SOC data to a cloud dashboard via IoT. Alerts notify the user when parameters exceed safe limits, improving battery life and safety.  
 
-LiquidCrystal lcd(12,11,5,4,3,2);
+### ⚡ Features  
+- Real-time monitoring of battery SOC and temperature  
+- Data sent to cloud dashboard via WiFi  
+- Alerts for unsafe battery conditions  
+- LCD shows live readings  
 
-const char* ssid = "YourWiFi";
-const char* password = "YourPassword";
-const char* server = "http://yourserver.com/update";
+### 🛠️ Components Required  
+- Arduino UNO or ESP8266/ESP32  
+- Voltage sensor  
+- DHT11 Temperature Sensor  
+- 16x2 LCD  
+- WiFi router/internet  
 
-const int batteryPin = A1;
-float batteryVoltage, SOC, temperature;
+### 🚗 Applications  
+- EV battery maintenance and safety  
+- Remote battery health monitoring  
+- Smart EV fleet management  
 
-void setup() {
-  lcd.begin(16,2);
-  dht.begin();
-  Serial.begin(115200);
-  WiFi.begin(ssid, password);
-  
-  lcd.print("Connecting WiFi");
-  while(WiFi.status() != WL_CONNECTED) delay(500);
-  lcd.clear();
-  lcd.print("WiFi Connected");
-  delay(2000);
-}
+---
 
-void loop() {
-  batteryVoltage = analogRead(batteryPin) * (25.0/1023.0);
-  SOC = (batteryVoltage / 25.0) * 100.0;
-  temperature = dht.readTemperature();
-
-  lcd.setCursor(0,0);
-  lcd.print("SOC:");
-  lcd.print(SOC,1);
-  lcd.print("%");
-  
-  lcd.setCursor(0,1);
-  lcd.print("Temp:");
-  lcd.print(temperature,1);
-  lcd.print("C");
-
-  // Send data to server
-  if(WiFi.status() == WL_CONNECTED){
-    WiFiClient client;
-    if(client.connect(server,80)){
-      client.print(String("GET /update?SOC=") + SOC + "&Temp=" + temperature + " HTTP/1.1\r\nHost: yourserver.com\r\nConnection: close\r\n\r\n");
-      client.stop();
-    }
-  }
-  
-  delay(2000);
-}
+👨‍💻 **Author:** K. Viswanadh  
